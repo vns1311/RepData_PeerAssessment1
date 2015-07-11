@@ -1,0 +1,110 @@
+Reproducible Research Peer Assessment 1
+=========================================
+
+##1. Loading and preprocessing the data
+
+The data for the assessment is loaded into R using the read.csv() function
+```{r echo=FALSE}
+library(lubridate)
+library(ggplot2)
+library(lattice)
+setwd("C:/Users//Shyam/Videos/Coursera - Data Science Specialization/Reproducable Research/Peer Assessment 1")
+```
+```{r}
+data <- read.csv("activity.csv",header=TRUE)
+str(data)
+summary(data)
+```
+
+
+##2. Mean total number of steps taken per day
+
+* Calculate Total Steps excluding the NA Values in the data set 
+```{r}
+total_steps_per_day <- aggregate(data$steps,by = list(data$date),sum,na.rm=TRUE)
+names(total_steps_per_day) = c("Date","Total")
+head(total_steps_per_day)
+```
+
+* Display the histogram and compute Mean and Median 
+```{r}
+hist(total_steps_per_day$Total, col= "blue",xlab = "Total No Of Steps",main = "Histogram of Total No of Steps")
+#Calculate Mean and Median
+mean <- mean(total_steps_per_day$Total)
+median <- median(total_steps_per_day$Total)
+```
+
+Mean :  `r round(mean,2)` 
+
+Median :  `r median` 
+
+
+##3. Average daily activity pattern
+
+* Compute Average no of steps per interval
+```{r}
+average<- aggregate(data$steps, by = list(data$interval),mean,na.rm=TRUE)
+names(average) = c("Intervals","AverageSteps")
+head(average)
+```
+
+* Time Series Plot of 5-minute interval (x-axis) and the average number of steps taken, averaged across all days
+```{r}
+plot(x = average$Intervals, y=average$AverageSteps, type="l",col="red",ylab="Average No of Steps",
+     xlab="Intervals", main="Time Series Plot")
+maximum<-average[which.max(average$AverageSteps),1]
+```
+
+5 Minute interval that has maximum number of steps : `r maximum`
+
+
+##4. Imputing missing values
+
+* Get the total no of NA Values
+```{r}
+count_of_na <- sum(is.na(data$steps))
+na_positions <- which(is.na(data$steps))
+```
+The no of NAs : `r count_of_na`  
+
+* Strategy for filling the NA Values. Here mean no of steps is used.
+```{r}
+vector_of_means <- rep(mean(data$steps, na.rm=TRUE), length(na_positions))
+data[na_positions, "steps"] <- vector_of_means
+head(data)
+```
+
+* Computing total_steps with the NAs populated.
+```{r}
+total_steps <- aggregate(data$steps,by = list(data$date),sum,na.rm=TRUE)
+names(total_steps) = c("Date","Total")
+head(total_steps)
+hist(total_steps$Total, col= "blue",xlab = "Total No Of Steps",main = "Histogram of Total No of Steps")
+```
+
+* Computing Mean and Median
+```{r}
+new_mean <- mean(total_steps$Total)
+new_median <- median(total_steps$Total)
+```
+
+Mean : `r round(new_mean,3)`
+
+Median : `r round(new_median,3)`
+
+
+##5. Differences in activity patterns between weekdays and weekends
+
+* Getting Days of Week and populating the appropriate value
+```{r}
+data$day_of_week<- ifelse(weekdays(as.Date(data$date)) %in% c("Saturday", "Sunday"),'weekend','weekday')                                                
+```
+
+* Computing average number of steps taken, averaged across all weekday days or weekend days
+```{r}
+average<- aggregate(data$steps, by=list(data$interval,data$day_of_week),mean)
+names(average)=c("Interval","Day","Mean")
+xyplot(average$Mean~average$Interval|average$Day,type='l',layout=c(1,2),
+       xlab="Intervals",ylab="No of Steps Taken",
+       main ="Difference in Activity patterns between Weekdays & Weekends")
+```
