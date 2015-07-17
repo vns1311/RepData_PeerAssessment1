@@ -1,14 +1,16 @@
+---
+output: html_document
+---
 Reproducible Research Peer Assessment 1
 =========================================
 
-##1. Loading and preprocessing the data
+## 1. Loading and preprocessing the data
 
 The data for the assessment is loaded into R using the read.csv() function
 ```{r echo=FALSE}
 library(lubridate)
 library(ggplot2)
 library(lattice)
-setwd("C:/Users//Shyam/Videos/Coursera - Data Science Specialization/Reproducable Research/Peer Assessment 1")
 ```
 ```{r}
 data <- read.csv("activity.csv",header=TRUE)
@@ -17,7 +19,7 @@ summary(data)
 ```
 
 
-##2. Mean total number of steps taken per day
+## 2. Mean total number of steps taken per day
 
 * Calculate Total Steps excluding the NA Values in the data set 
 ```{r}
@@ -39,7 +41,7 @@ Mean :  `r round(mean,2)`
 Median :  `r median` 
 
 
-##3. Average daily activity pattern
+## 3. Average daily activity pattern
 
 * Compute Average no of steps per interval
 ```{r}
@@ -58,7 +60,7 @@ maximum<-average[which.max(average$AverageSteps),1]
 5 Minute interval that has maximum number of steps : `r maximum`
 
 
-##4. Imputing missing values
+## 4. Imputing missing values
 
 * Get the total no of NA Values
 ```{r}
@@ -93,7 +95,7 @@ Mean : `r round(new_mean,3)`
 Median : `r round(new_median,3)`
 
 
-##5. Differences in activity patterns between weekdays and weekends
+## 5. Differences in activity patterns between weekdays and weekends
 
 * Getting Days of Week and populating the appropriate value
 ```{r}
